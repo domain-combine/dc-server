@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const domain = 'bvr678ijbvftyujnbvtyujn.com';
+const domain = 'bvr678ijbvftyujnbvtyujn';
 
 const godaddy = async () => {
   const { data: { Products } } = await axios({
@@ -16,5 +16,5 @@ const godaddy = async () => {
     },
   });
   return Products
-    .map(({ Tld, PriceInfo: { CurrentPrice } }) => ({ tld: Tld, price: CurrentPrice }));
+    .map(({ Tld: tld, PriceInfo: { CurrentPrice: price } }) => ({ tld, price }));
 };
