@@ -1,3 +1,4 @@
+const axios = require('axios');
 const {
   Builder,
   By,
@@ -7,7 +8,7 @@ const {
 
 const domain = 'dfjdkfjkadsjfldksjf';
 
-const getGabiaPrice = async () => {
+const getGabiaList = async () => {
   const driver = await new Builder().forBrowser('chrome').build();
   const arr = [];
 
@@ -27,6 +28,24 @@ const getGabiaPrice = async () => {
   return arr;
 };
 
-module.exports = {
-  getGabiaPrice,
+const getGodaddyList = async () => {
+  const { data: { Products } } = await axios({
+    method: 'get',
+    url: 'https://find.godaddy.com/domainsapi/v1/search/spins',
+    params: {
+      pagestarts: 0,
+      pagesize: 1000,
+      q: domain,
+    },
+    headers: {
+      Cookie: 'currency=KRW;',
+    },
+  });
+  return Products
+    .map(({ Tld: tld, PriceInfo: { CurrentPrice: price } }) => ({ tld, price }));
 };
+
+module.exports = {
+  getGabiaPrice: getGabiaList,
+  godaddy: getGodaddyList,
+}
