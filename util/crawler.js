@@ -46,6 +46,15 @@ const getGodaddyList = async () => {
     .map(({ Tld: tld, PriceInfo: { CurrentPrice: price } }) => ({ tld, price }));
 };
 
+const getHostingKrList = async () => {
+  const { data: { event: prices } } = await axios('https://www.hosting.kr/domains/carts/prices');
+  const arr = [];
+  Object.keys(prices).forEach((key) => {
+    arr.push({ tld: key.slice(1), price: prices[key][1] });
+  });
+  return arr;
+};
+
 const getDirectHostingList = async () => {
   const { data: lawHTML } = await axios.get('https://direct.co.kr/domain/dm_pay.html');
   const $ = cheerio.load(lawHTML);
@@ -64,5 +73,6 @@ const getDirectHostingList = async () => {
 module.exports = {
   getGabiaList,
   getGodaddyList,
+  getHostingKrList,
   getDirectHostingList,
 };
