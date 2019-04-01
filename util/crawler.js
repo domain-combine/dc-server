@@ -70,9 +70,31 @@ const getDirectHostingList = async () => {
   return res;
 };
 
+const getMailPlugList = async () => {
+  const driver = await new Builder().forBrowser('chrome').build();
+  const arr = [];
+
+  try {
+    await driver.get('https://www.mailplug.com/front/domain/domain_regist');
+    await driver.findElement(By.name('domainlist1')).sendKeys(domain, Key.RETURN);
+    await driver.wait(until.elementLocated(By.className('domain_title')));
+    const domains = await driver.findElements(By.className('domain_title'));
+    const tlds = domains.map(x => x.getText());
+
+    await Promise.all(tlds).then((values) => {
+      arr.push(...values.slice(1));
+    });
+  } finally {
+    setTimeout(() => driver.quit(), 100);
+  }
+
+  return arr;
+};
+
 module.exports = {
   getGabiaList,
   getGodaddyList,
   getHostingKrList,
   getDirectHostingList,
+  getMailPlugList,
 };
