@@ -45,7 +45,17 @@ const getGodaddyList = async () => {
     .map(({ Tld: tld, PriceInfo: { CurrentPrice: price } }) => ({ tld, price }));
 };
 
+const getHostingKrList = async () => {
+  const { data: { event: prices } } = await axios('https://www.hosting.kr/domains/carts/prices');
+  const arr = [];
+  Object.keys(prices).forEach((key) => {
+    arr.push({ tld: key.slice(1), price: prices[key][1] });
+  });
+  return arr;
+};
+
 module.exports = {
-  getGabiaPrice: getGabiaList,
-  godaddy: getGodaddyList,
-}
+  getGabiaList,
+  getGodaddyList,
+  getHostingKrList,
+};
