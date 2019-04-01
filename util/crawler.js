@@ -10,6 +10,7 @@ const domain = 'dfjdkfjkadsjfldksjf';
 const getGabiaPrice = async () => {
   const driver = await new Builder().forBrowser('chrome').build();
   const arr = [];
+
   try {
     await driver.get('https://www.gabia.com/');
     await driver.findElement(By.id('new_domain')).sendKeys(domain, Key.RETURN);
@@ -22,6 +23,7 @@ const getGabiaPrice = async () => {
   } finally {
     await driver.quit();
   }
+
   return arr;
 };
 
