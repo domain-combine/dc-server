@@ -1,4 +1,5 @@
 const axios = require('axios');
+const cheerio = require('cheerio');
 const {
   Builder,
   By,
@@ -6,7 +7,7 @@ const {
   until,
 } = require('selenium-webdriver');
 
-const domain = 'dfjdkfjkadsjfldksjf';
+const domain = 'bvr678ijbvftyujnbvtyujn';
 
 const getGabiaList = async () => {
   const driver = await new Builder().forBrowser('chrome').build();
@@ -54,8 +55,24 @@ const getHostingKrList = async () => {
   return arr;
 };
 
+const getDirectHostingList = async () => {
+  const { data: lawHTML } = await axios.get('https://direct.co.kr/domain/dm_pay.html');
+  const $ = cheerio.load(lawHTML);
+
+  const res = $('div[class=con] tbody')
+    .first()
+    .find('tr').map((i, e) => ({
+      tld: $(e).find('th').text(),
+      price: $(e).find('td').text().slice(0, -3),
+    }))
+    .get();
+
+  return res;
+};
+
 module.exports = {
   getGabiaList,
   getGodaddyList,
   getHostingKrList,
+  getDirectHostingList,
 };
