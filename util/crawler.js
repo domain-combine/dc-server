@@ -63,7 +63,7 @@ const getDirectHostingList = async () => {
 
 const getMailPlugList = async () => {
   const driver = await new Builder().forBrowser('chrome').build();
-  let arr = [];
+  let tldArr = [];
 
   try {
     await driver.get('https://www.mailplug.com/front/domain/domain_regist');
@@ -72,10 +72,10 @@ const getMailPlugList = async () => {
       await driver.wait(until.stalenessOf(By.css('img[alt=검색 결과 더보기]')));
     } catch (e) {
       const domains = await driver.findElements(By.className('domain_title'));
-      const tlds = domains.map(async x => x.getText());
+      const tlds = domains.map(x => x.getText());
 
       await Promise.all(tlds).then((values) => {
-        arr.push(...values.slice(1));
+        tldArr.push(...values.slice(1));
       });
     }
   } finally {
@@ -83,16 +83,13 @@ const getMailPlugList = async () => {
   }
 
   const param = {};
-  arr = arr.map(x => x.split('.').slice(1).join('.'));
+  tldArr = tldArr.map(x => x.split('.').slice(1).join('.'));
 
-  arr.forEach((x, i) => {
+  tldArr.forEach((x, i) => {
     param[`tld_arr[${i}]`] = x;
   });
   param.hope_str = domain;
 
-  const par = {};
-  par['tld_arr[0]'] = 'org';
-  par.hope_str = domain;
   const { data } = await axios({
     method: 'get',
     url: 'https://www.mailplug.com/front/xhr_domain/domainRegistCheck',
