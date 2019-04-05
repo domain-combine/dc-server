@@ -77,17 +77,11 @@ const getMailPlugList = async () => {
   try {
     await driver.get('https://www.mailplug.com/front/domain/domain_regist');
     await driver.findElement(By.name('domainlist1')).sendKeys(domain, Key.RETURN);
-<<<<<<< HEAD
-    await driver.wait(until.elementLocated(By.className('domain_title')));
-    const domains = await driver.findElements(By.className('domain_title'));
-    const tlds = domains.map(x => x.getText());
-=======
     try {
       await driver.wait(until.stalenessOf(By.css('img[alt=검색 결과 더보기]')));
     } catch (e) {
       const domains = await driver.findElements(By.className('domain_title'));
       const tlds = domains.map(x => x.getText());
->>>>>>> gu
 
       await Promise.all(tlds).then((values) => {
         tldArr.push(...values.slice(1));
