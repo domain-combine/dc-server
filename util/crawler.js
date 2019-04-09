@@ -6,6 +6,8 @@ const {
   Key,
   until,
 } = require('selenium-webdriver');
+const puppeteer = require('puppeteer');
+
 
 const domain = 'bvr678ijbvftyujnbvtyujn';
 
@@ -70,9 +72,32 @@ const getDirectHostingList = async () => {
   return res;
 };
 
+// https://www.onlydomains.com
+// https://github.com/GoogleChrome/puppeteer/tree/v1.14.0
+const getOnlyDomainsList = async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let obj = [];
+
+  try {
+    await page.goto('https://www.onlydomains.com');
+    await page.type('#domain', domain);
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('#searchResultPage > div.Results > div.HomeResult > div');
+    // eslint-disable-next-line no-undef
+    const [{ ecommerce: { impressions: prices } }] = await page.evaluate(() => dataLayer);
+    obj = prices.map(({ name: tld, price }) => ({ tld, price }));
+  } finally {
+    await browser.close();
+  }
+
+  return obj;
+};
+
 module.exports = {
   getGabiaList,
   getGodaddyList,
   getHostingKrList,
   getDirectHostingList,
+  getOnlyDomainsList,
 };
