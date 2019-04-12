@@ -92,10 +92,49 @@ const getOnlyDomainsList = async () => {
   return result;
 };
 
+const getMailPlugList = async () => {
+  const driver = await new Builder().forBrowser('chrome').build();
+  let tldArr = [];
+
+  try {
+    await driver.get('https://www.mailplug.com/front/domain/domain_regist');
+    await driver.findElement(By.name('domainlist1')).sendKeys(domain, Key.RETURN);
+    try {
+      await driver.wait(until.stalenessOf(By.css('img[alt=검색 결과 더보기]')));
+    } catch (e) {
+      const domains = await driver.findElements(By.className('domain_title'));
+      const tlds = domains.map(x => x.getText());
+
+      await Promise.all(tlds).then((values) => {
+        tldArr.push(...values.slice(1));
+      });
+    }
+  } finally {
+    setTimeout(() => driver.quit(), 100);
+  }
+
+  const param = {};
+  tldArr = tldArr.map(x => x.split('.').slice(1).join('.'));
+
+  tldArr.forEach((x, i) => {
+    param[`tld_arr[${i}]`] = x;
+  });
+  param.hope_str = domain;
+
+  const { data } = await axios({
+    method: 'get',
+    url: 'https://www.mailplug.com/front/xhr_domain/domainRegistCheck',
+    params: param,
+  });
+
+  return Object.values(data).map(x => ({ tld: x.tld, price: x.gp_tot_price }));
+};
+
 module.exports = {
   getGabiaList,
   getGodaddyList,
   getHostingKrList,
   getDirectHostingList,
   getOnlyDomainsList,
+  getMailPlugList,
 };
