@@ -6,7 +6,7 @@ const {
   Key,
   until,
 } = require('selenium-webdriver');
-// const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer');
 
 
 const domain = 'bvr678ijbvftyujnbvtyujn';
