@@ -8,8 +8,28 @@ const {
 } = require('selenium-webdriver');
 const puppeteer = require('puppeteer');
 
-
 const domain = 'bvr678ijbvftyujnbvtyujn';
+
+const getNameList = async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let result = [];
+
+  try {
+    await page.goto(`https://www.name.com/domain/search/${domain}`);
+    const response = await page.waitForResponse('https://www.name.com/api/search/poll');
+    const json = await response.json();
+
+    result = Object.entries(json.domains).map(e => ({
+      tld: e[0].split('.')[1],
+      price: e[1].renewal_price,
+    }));
+  } finally {
+    await browser.close();
+  }
+
+  return result;
+};
 
 const getGabiaList = async () => {
   const driver = await new Builder().forBrowser('chrome').build();
@@ -136,6 +156,7 @@ const getBluehostList = async () => {
 };
 
 module.exports = {
+  getNameList,
   getGabiaList,
   getGodaddyList,
   getHostingKrList,
