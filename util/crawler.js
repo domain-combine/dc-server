@@ -130,6 +130,11 @@ const getMailPlugList = async () => {
   return Object.values(data).map(x => ({ tld: x.tld, price: x.gp_tot_price }));
 };
 
+const getBluehostList = async () => {
+  const { data: { results } } = await axios.get(`https://registration.bluehost.com/domains/search/${domain}?propertyID=52`);
+  return results.map(x => ({ tld: x.domainInfo.tld, price: x.terms[0].price }));
+};
+
 module.exports = {
   getGabiaList,
   getGodaddyList,
@@ -137,4 +142,5 @@ module.exports = {
   getDirectHostingList,
   getOnlyDomainsList,
   getMailPlugList,
+  getBluehostList,
 };
