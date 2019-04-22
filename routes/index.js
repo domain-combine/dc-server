@@ -4,6 +4,6 @@ const ctrl = require('./index.ctrl');
 const router = express.Router();
 
 router.get('/list', ctrl.getList);
-router.get('/redirect', ctrl.redirect);
+router.get('/detail', ctrl.getDetail);
 
 module.exports = router;
