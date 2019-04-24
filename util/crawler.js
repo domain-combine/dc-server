@@ -32,24 +32,30 @@ const getNameList = async () => {
 };
 
 const getGabiaList = async () => {
-  const driver = await new Builder().forBrowser('chrome').build();
-  const arr = [];
+  const browser = await puppeteer.launch({ headless: false });
+  const page = await browser.newPage();
+  const result = [];
 
   try {
-    await driver.get('https://www.gabia.com/');
-    await driver.findElement(By.id('new_domain')).sendKeys(domain, Key.RETURN);
-    await driver.wait(until.elementLocated(By.id('ul_recommend')));
-    const domains = await driver.findElement(By.css('#ul_recommend')).getText();
+    await page.goto('https://www.gabia.com');
+    await page.type('#new_domain', domain);
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('.fal.fa-spinner.fa-spin');
+    // eslint-disable-next-line no-undef
+    await page.waitFor(() => !document.querySelector('#ul_recommend .fal.fa-spinner.fa-spin'));
+    const domains = await page.$eval('#ul_recommend', e => e.innerText);
     domains.split('\n').forEach((e, i) => {
-      if (i % 2 === 0) arr.push({ tld: e.split(' ')[0].split('.')[1], price: undefined });
-      else [arr[Math.floor(i / 2)].price] = e.split(' /');
+      if (i % 2 === 0) result.push({ tld: e.split(' ')[0].split('.')[1], price: undefined });
+      else [result[Math.floor(i / 2)].price] = e.split(' /');
     });
   } finally {
-    await driver.quit();
+    await browser.close();
   }
 
-  return arr;
+  return result;
 };
+
+getGabiaList().then(console.log);
 
 const getGodaddyList = async () => {
   const { data: { Products } } = await axios({
