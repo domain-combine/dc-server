@@ -117,24 +117,25 @@ const getOnlyDomainsList = async () => {
 };
 
 const getMailPlugList = async () => {
-  const driver = await new Builder().forBrowser('chrome').build();
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
   let tldArr = [];
 
   try {
-    await driver.get('https://www.mailplug.com/front/domain/domain_regist');
-    await driver.findElement(By.name('domainlist1')).sendKeys(domain, Key.RETURN);
-    try {
-      await driver.wait(until.stalenessOf(By.css('img[alt=검색 결과 더보기]')));
-    } catch (e) {
-      const domains = await driver.findElements(By.className('domain_title'));
-      const tlds = domains.map(x => x.getText());
+    await page.goto('https://www.mailplug.com/front/domain/domain_regist');
+    await page.type('[name="domainlist1"]', domain);
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('img[alt="검색 결과 더보기"]');
+    await page.waitForSelector('img[alt="검색 결과 더보기"]', { hidden: true });
 
-      await Promise.all(tlds).then((values) => {
-        tldArr.push(...values.slice(1));
-      });
-    }
+    // eslint-disable-next-line no-undef
+    const tlds = await page.evaluate(() => [...document.querySelectorAll('.domain_title')].map(x => x.innerText));
+
+    await Promise.all(tlds).then((values) => {
+      tldArr.push(...values.slice(1));
+    });
   } finally {
-    setTimeout(() => driver.quit(), 100);
+    await browser.close();
   }
 
   const param = {};
