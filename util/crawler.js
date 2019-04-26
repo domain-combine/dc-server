@@ -32,7 +32,7 @@ const getNameList = async () => {
 };
 
 const getGabiaList = async () => {
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const result = [];
 
@@ -54,8 +54,6 @@ const getGabiaList = async () => {
 
   return result;
 };
-
-getGabiaList().then(console.log);
 
 const getGodaddyList = async () => {
   const { data: { Products } } = await axios({
