@@ -1,11 +1,5 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const {
-  Builder,
-  By,
-  Key,
-  until,
-} = require('selenium-webdriver');
 const puppeteer = require('puppeteer');
 
 const domain = 'bvr678ijbvftyujnbvtyujn';
