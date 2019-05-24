@@ -2,7 +2,7 @@ const axios = require('axios');
 const domains = require('../models/domain');
 
 const validateDomain = async (domain, tld) => {
-  const apiUrl = `https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=at_AYhrsq6qQrSETtqsn4V3UQFgxj0HQ&domainName=${domain}.${tld}&outputFormat=json`;
+  const apiUrl = `https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=${process.env['WHOIS_APIKEY']}&domainName=${domain}.${tld}&outputFormat=json`;
   const { data: { WhoisRecord: { parseCode } } } = await axios.get(apiUrl);
   if (parseCode === 0) {
     return true;
@@ -11,20 +11,13 @@ const validateDomain = async (domain, tld) => {
 };
 
 const validateTld = async (domain, tlds) => {
-  const results = [];
-  for (let i = 0; i < tlds.length; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    const res = await validateDomain(domain, tlds[i]);
-    console.log(`${tlds[i]} > ${res}`);
-    if (res) {
-      results.push(tlds[i]);
-    }
-  }
-  return results;
+  const isValid = await Promise.all(tlds.map(tld => validateDomain(domain, tld)));
+  const result = tlds.filter((_, index) => isValid[index]);
+  return result;
 };
 
 const getList = (req, res) => {
-  const allTlds = domains.getAvailableTlds(req.params.domain);
+  const allTlds = domains.getAvailableTlds(req.query.domain);
   const availableTlds = validateTld(req.params.domain, allTlds);
   const tlds = domains.getList(availableTlds);
 
@@ -41,7 +34,7 @@ const getList = (req, res) => {
 };
 
 const getDetail = (req, res) => {
-  res.json(domains.getDetail(req.params.tld));
+  res.json(domains.getDetail(req.query.tld));
 };
 
 module.exports = {
