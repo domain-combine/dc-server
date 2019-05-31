@@ -12,14 +12,15 @@ async function getList(tlds) {
   const results = await Promise.all(tlds.map(e => redis.get(e)));
 
   tlds.forEach((e, i) => {
-    list[e] = results[i];
+    list[e] = JSON.parse(results[i]);
   });
 
   return list;
 }
 
-function getDetail(tld) {
-  return redis.get(tld);
+async function getDetail(tld) {
+  const result = await redis.get(tld);
+  return JSON.parse(result);
 }
 
 module.exports = {
