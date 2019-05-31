@@ -18,7 +18,8 @@
   "homepage": "https://github.com/domain-combine/dc-server#readme",
   "dependencies": {
     "express": "^4.16.4",
-    "ioredis": "^4.9.5"
+    "ioredis": "^4.9.5",
+    "lodash.zipobject": "^4.1.3"
   },
   "devDependencies": {
     "eslint": "^5.15.3",

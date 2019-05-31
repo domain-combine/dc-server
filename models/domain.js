@@ -1,4 +1,5 @@
 const Redis = require('ioredis');
+const zipObject = require('lodash.zipobject');
 
 const redis = new Redis(6379, process.env.REDIS_URL);
 
@@ -8,14 +9,9 @@ async function getAvailableTlds() {
 }
 
 async function getList(tlds) {
-  const list = {};
-  const results = await Promise.all(tlds.map(e => redis.get(e)));
+  const results = await redis.mget(...tlds);
 
-  tlds.forEach((e, i) => {
-    list[e] = JSON.parse(results[i]);
-  });
-
-  return list;
+  return zipObject(tlds, results.map(e => JSON.parse(e)));
 }
 
 async function getDetail(tld) {
