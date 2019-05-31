@@ -1,28 +1,25 @@
-function getAvailableTlds (domain) {
-  return [
-    'com',
-    'kr',
-  ];
+const Redis = require('ioredis');
+
+const redis = new Redis(6379, process.env.REDIS_URL);
+
+async function getAvailableTlds() {
+  const tlds = await redis.get('_tlds');
+  return JSON.parse(tlds);
 }
 
-function getList (tlds) {
-  return {
-    com: [{
-      origin: 'https://somewhere.com',
-      price: 10000,
-    }],
-    kr: [{
-      origin: 'https://somewhere.com',
-      price: 10000,
-    }],
-  };
+async function getList(tlds) {
+  const list = {};
+  const results = await Promise.all(tlds.map(e => redis.get(e)));
+
+  tlds.forEach((e, i) => {
+    list[e] = results[i];
+  });
+
+  return list;
 }
 
-function getDetail (tld) {
-  return {
-    origin: 'https://somewhere.com',
-    price: 10000,
-  };
+function getDetail(tld) {
+  return redis.get(tld);
 }
 
 module.exports = {
