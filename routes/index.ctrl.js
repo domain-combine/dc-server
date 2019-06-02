@@ -16,10 +16,10 @@ const validateTld = async (domain, tlds) => {
   return result;
 };
 
-const getList = (req, res) => {
-  const allTlds = domains.getAvailableTlds(req.query.domain);
+const getList = async (req, res) => {
+  const allTlds = await domains.getAvailableTlds(req.query.domain);
   const availableTlds = validateTld(req.query.domain, allTlds);
-  const tlds = domains.getList(availableTlds);
+  const tlds = await domains.getList(availableTlds);
 
   const result = [];
   Object.keys(tlds).forEach((tld) => {
@@ -33,8 +33,8 @@ const getList = (req, res) => {
   res.json(result);
 };
 
-const getDetail = (req, res) => {
-  res.json(domains.getDetail(req.query.tld));
+const getDetail = async (req, res) => {
+  res.json(await domains.getDetail(req.query.tld));
 };
 
 module.exports = {
