@@ -1,28 +1,22 @@
-function getAvailableTlds (domain) {
-  return [
-    'com',
-    'kr',
-  ];
+const Redis = require('ioredis');
+const zipObject = require('lodash.zipobject');
+
+const redis = new Redis(6379, process.env.REDIS_URL);
+
+async function getAvailableTlds() {
+  const tlds = await redis.get('_tlds');
+  return JSON.parse(tlds);
 }
 
-function getList (tlds) {
-  return {
-    com: [{
-      origin: 'https://somewhere.com',
-      price: 10000,
-    }],
-    kr: [{
-      origin: 'https://somewhere.com',
-      price: 10000,
-    }],
-  };
+async function getList(tlds) {
+  const results = await redis.mget(...tlds);
+
+  return zipObject(tlds, results.map(e => JSON.parse(e)));
 }
 
-function getDetail (tld) {
-  return {
-    origin: 'https://somewhere.com',
-    price: 10000,
-  };
+async function getDetail(tld) {
+  const result = await redis.get(tld);
+  return JSON.parse(result);
 }
 
 module.exports = {
