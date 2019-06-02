@@ -18,7 +18,7 @@ const validateTld = async (domain, tlds) => {
 
 const getList = async (req, res) => {
   const allTlds = await domains.getAvailableTlds(req.query.domain);
-  const availableTlds = validateTld(req.query.domain, allTlds);
+  const availableTlds = await validateTld(req.query.domain, allTlds);
   const tlds = await domains.getList(availableTlds);
 
   const result = [];
