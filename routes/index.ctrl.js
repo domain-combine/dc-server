@@ -2,7 +2,7 @@ const axios = require('axios');
 const domains = require('../models/domain');
 
 const validateDomain = async (domain, tld) => {
-  const apiUrl = `https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=${process.env['WHOIS_APIKEY']}&domainName=${domain}.${tld}&outputFormat=json`;
+  const apiUrl = `https://www.whoisxmlapi.com/whoisserver/WhoisService?apiKey=${process.env.WHOIS_APIKEY}&domainName=${domain}.${tld}&outputFormat=json`;
   const { data: { WhoisRecord: { parseCode } } } = await axios.get(apiUrl);
   if (parseCode === 0) {
     return true;
