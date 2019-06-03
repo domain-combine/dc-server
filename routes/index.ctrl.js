@@ -10,10 +10,7 @@ const validateDomain = async (domain, tld) => {
       outputFormat: 'json',
     },
   });
-  if (parseCode === 0) {
-    return true;
-  }
-  return false;
+  return !parseCode;
 };
 
 const validateTld = async (domain, tlds) => {
